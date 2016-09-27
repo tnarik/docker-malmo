@@ -4,7 +4,6 @@ services:
   malmo:
     image: tnarik/malmo
     container_name: malmo
-#    privileged: true
     volumes:
 #      - ./test:/tmp/test
     ports:
