@@ -5,10 +5,8 @@ services:
     image: tnarik/malmo
     container_name: malmo
     volumes:
-#      - ./test:/tmp/test
+      - ./src/:/code/:rw
     ports:
       - "5900:5900"
     build:
       context: .
-#    environment:
-#      DISPLAY: "192.168.0.7:0"

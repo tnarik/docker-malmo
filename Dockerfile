@@ -38,19 +38,22 @@ RUN apt-get update && \
 # java -jar Minecraft.jar
 
 RUN echo "#!/usr/bin/env bash \\n \
-      Xvfb :1 -screen 0 1024x768x16 &> xvfb.log & \\n \
+      (Xvfb :1 -screen 0 854x480x16 &> xvfb.log || true) & \\n \
       export DISPLAY=:1.0 \\n \
       ${MALMO_PATH}/Minecraft/launchClient.sh & \\n \
-      x11vnc -nopw -forever -bg -shared -display :1" > ${MALMO_PATH}/Minecraft/malmo && \
+      x11vnc -q -nopw -forever -shared -display :1" > ${MALMO_PATH}/Minecraft/malmo && \
   chmod +x ${MALMO_PATH}/Minecraft/malmo
 
 RUN echo "#!/usr/bin/env bash \\n \
-      Xvfb :1 -screen 0 320x240x16 &> xvfb.log & \\n \
+      (Xvfb :1 -screen 0 854x480x16 &> xvfb.log || true) & \\n \
       export DISPLAY=:1.0 \\n \
       ${MALMO_PATH}/Minecraft/launchClient.sh & \\n \
-      x11vnc -nopw -forever -bg -shared -display :1" > ${MALMO_PATH}/Minecraft/malmo2 && \
+      x11vnc -q -nopw -forever -bg -shared -display :1" > ${MALMO_PATH}/Minecraft/malmo2 && \
   chmod +x ${MALMO_PATH}/Minecraft/malmo2
 
 EXPOSE 5900
+EXPOSE 10000
 
-CMD ["${MALMO_PATH}/Minecraft/malmo"]
+WORKDIR /code
+
+CMD ["/bin/bash", "-c", "${MALMO_PATH}/Minecraft/malmo2"]
