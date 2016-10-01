@@ -6,6 +6,8 @@ ARG MALMO_VERSION=Malmo-0.17.0-Linux-Ubuntu-15.10-64bit
 
 ENV MALMO_PATH /usr/local/malmo
 ENV MALMO_XSD_PATH ${MALMO_PATH}/Schemas
+
+ENV PYTHONPATH ${MALMO_PATH}/Python_Examples
 ENV VNC_PASS vnc_pass
 
 RUN apt-get update && \
