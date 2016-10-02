@@ -41,18 +41,12 @@ RUN apt-get update && \
 # wget -P vanilla http://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar
 # java -jar Minecraft.jar
 
-RUN echo "#!/usr/bin/env bash \\n \
-      (Xvfb :1 -screen 0 854x480x16 &> /tmp/xvfb.log || true) & \\n \
-      export DISPLAY=:1.0 \\n \
-      ${MALMO_PATH}/Minecraft/launchClient.sh & \\n \
-      mkdir -p ~/.vnc \\n \
-      x11vnc -storepasswd \${VNC_PASS} ~/.vnc/passwd \\n \
-      x11vnc -q -usepw -forever -shared -display :1" > ${MALMO_PATH}/Minecraft/malmo_client && \
-  chmod +x ${MALMO_PATH}/Minecraft/malmo_client
+COPY files/malmo_client ${MALMO_PATH}/malmo_client
+RUN chmod 777 ${MALMO_PATH}/malmo_client
 
 EXPOSE 5900
 EXPOSE 10000
 
 WORKDIR /code
 
-CMD ["/bin/bash", "-c", "${MALMO_PATH}/Minecraft/malmo_client"]
+CMD [ "/usr/local/malmo/malmo_client" ]

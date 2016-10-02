@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# stopping container does SIGTERM -> EXIT -> SIGTERM (because of the subshells)
+trap 'kill 0; exit 0' EXIT
+trap 'exit 0' SIGTERM
+
+(Xvfb :1 -screen 0 854x480x16 &> /tmp/xvfb.log || true) &
+export DISPLAY=:1.0
+
+${MALMO_PATH}/Minecraft/launchClient.sh &
+
+mkdir -p ~/.vnc
+x11vnc -storepasswd ${VNC_PASS} ~/.vnc/passwd
+x11vnc -q -usepw -bg -forever -shared -display :1
+
+wait
