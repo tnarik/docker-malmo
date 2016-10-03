@@ -34,7 +34,8 @@ RUN apt-get update && \
   ./gradlew build && \
   
   # clean up
-  rm -rf /tmp/malmo.zip /var/lib/apt/lists/*
+  apt-get clean && \
+  rm -rf /tmp/* /tmp/.* /var/lib/apt/lists/*
 
 COPY files/malmo_client ${MALMO_PATH}/malmo_client
 RUN chmod 777 ${MALMO_PATH}/malmo_client
