@@ -37,9 +37,9 @@ RUN apt-get update && \
   rm -rf /tmp/malmo.zip /var/lib/apt/lists/*
 
 # FOR MINECRAFT VANILLA
-#RUN apt-get install x11-xserver-utils && \
-# wget -P vanilla http://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar
-# java -jar Minecraft.jar
+RUN apt-get clean && apt-get update && apt-get install -y x11-xserver-utils && \
+  wget -P vanilla http://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar
+#   java -jar Minecraft.jar
 
 COPY files/malmo_client ${MALMO_PATH}/malmo_client
 RUN chmod 777 ${MALMO_PATH}/malmo_client

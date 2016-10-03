@@ -1,16 +1,32 @@
 #!/usr/bin/env bash
 
+#echo "shell $$" >> /tmp/k; 
 # stopping container does SIGTERM -> EXIT -> SIGTERM (because of the subshells)
-trap 'kill 0; exit 0' EXIT
+#trap 'echo EXIT">> /tmp/k; echo " $$ $BASHPID $PPID >> /tmp/k; ps -edjf >> /tmp/k; kill 0' EXIT
+#trap 'echo TERM">> /tmp/k; echo " $$ $BASHPID $PPID >> /tmp/k; ps -edjf >> /tmp/k; exit 0' SIGTERM
+
+rm -rf /tmp/* /tmp/.* &> /dev/null
+
+trap 'kill 0' EXIT
 trap 'exit 0' SIGTERM
 
-(Xvfb :1 -screen 0 854x480x16 &> /tmp/xvfb.log || true) &
+(
+  #echo "subshell $$ $BASHPID $PPID" >> /tmp/k
+  #trap 'echo TERM">> /tmp/k; echo " $$ $BASHPID $PPID >> /tmp/k; ps -edjf >> /tmp/k; kill 0; exit 0' SIGTERM
+#  trap 'kill 0; exit 0' SIGTERM
+  nohup Xvfb :1 -screen 0 854x480x16 &> /tmp/xvfb.log || true
+  wait $?) &
+
+#echo "is it $! ???" >> /tmp/k; 
+
 export DISPLAY=:1.0
 
-${MALMO_PATH}/Minecraft/launchClient.sh &
+#${MALMO_PATH}/Minecraft/launchClient.sh &
+# For speed, just the execution step from ${MALMO_PATH}/Minecraft/launchClient.sh
+cd ${MALMO_PATH}/Minecraft && ./gradlew runClient --offline &
 
 mkdir -p ~/.vnc
 x11vnc -storepasswd ${VNC_PASS} ~/.vnc/passwd
 x11vnc -q -usepw -bg -forever -shared -display :1
-
+#echo "shell 2 $$ $BASHPID $PPID " >> /tmp/k; 
 wait
