@@ -1,10 +1,10 @@
 FROM ubuntu
-#:14.04
+
 MAINTAINER tnarik <tnarik@lecafeautomatique.co.uk>
 
 ARG MALMO_VERSION=Malmo-0.17.0-Linux-Ubuntu-15.10-64bit
 
-ENV MALMO_PATH /usr/local/malmo
+ENV MALMO_PATH /opt/malmo
 ENV MALMO_XSD_PATH ${MALMO_PATH}/Schemas
 
 ENV PYTHONPATH ${MALMO_PATH}/Python_Examples
@@ -36,11 +36,6 @@ RUN apt-get update && \
   # clean up
   rm -rf /tmp/malmo.zip /var/lib/apt/lists/*
 
-# FOR MINECRAFT VANILLA
-RUN apt-get clean && apt-get update && apt-get install -y x11-xserver-utils && \
-  wget -P vanilla http://s3.amazonaws.com/Minecraft.Download/launcher/Minecraft.jar
-#   java -jar Minecraft.jar
-
 COPY files/malmo_client ${MALMO_PATH}/malmo_client
 RUN chmod 777 ${MALMO_PATH}/malmo_client
 
@@ -49,4 +44,4 @@ EXPOSE 10000
 
 WORKDIR /code
 
-CMD [ "/usr/local/malmo/malmo_client" ]
+CMD [ "/opt/malmo/malmo_client" ]
