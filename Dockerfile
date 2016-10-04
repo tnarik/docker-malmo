@@ -26,7 +26,6 @@ RUN apt-get update && \
   wget -q -O /tmp/malmo.zip https://github.com/Microsoft/malmo/releases/download/0.17.0/${MALMO_VERSION}.zip && \
   unzip -d /tmp/ /tmp/malmo.zip && \
   mv /tmp/${MALMO_VERSION} ${MALMO_PATH} && \
-  cd ${MALMO_PATH}/Minecraft  && \
 
   # Build in the image
   cd ${MALMO_PATH}/Minecraft && \
@@ -35,7 +34,7 @@ RUN apt-get update && \
   
   # clean up
   apt-get clean && \
-  rm -rf /tmp/* /tmp/.* /var/lib/apt/lists/*
+  rm -rf /tmp/* /tmp/.[!.]* /tmp/..?*  /var/lib/apt/lists/*
 
 COPY files/malmo_client ${MALMO_PATH}/malmo_client
 RUN chmod 777 ${MALMO_PATH}/malmo_client
