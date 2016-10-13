@@ -27,11 +27,10 @@ RUN apt-get update && \
   unzip -d /tmp/ /tmp/malmo.zip && \
   mv /tmp/${MALMO_VERSION} ${MALMO_PATH} && \
 
-  # Build in the image
   cd ${MALMO_PATH}/Minecraft && \
   ./gradlew setupDecompWorkspace && \
   ./gradlew build && \
-  
+
   # clean up
   apt-get clean && \
   rm -rf /tmp/* /tmp/.[!.]* /tmp/..?*  /var/lib/apt/lists/*
