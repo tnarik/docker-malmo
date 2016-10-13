@@ -2,22 +2,7 @@ version: '2'
 
 services:
   malmo:
-    image: tnarik/malmo
+    image: tnarik/malmo:from_source
     container_name: malmo
-    volumes:
-      - ./src/:/code/:rw
-    ports:
-      - "5900:5900"
     build:
       context: .
-
-  malsrc:
-    image: tnarik/malmo:source
-    container_name: malsrc
-    volumes:
-      - ./src/:/code/:rw
-    ports:
-      - "5900:5900"
-    build:
-      context: .
-      dockerfile: Dockerfile_src
