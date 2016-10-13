@@ -2,7 +2,7 @@ FROM ubuntu
 
 MAINTAINER tnarik <tnarik@lecafeautomatique.co.uk>
 
-ARG MALMO_VERSION=Malmo-0.17.0-Linux-Ubuntu-15.10-64bit
+ARG MALMO_BUILD_PATH=/tmp/malmo_build
 
 ENV MALMO_PATH /opt/malmo
 ENV MALMO_XSD_PATH ${MALMO_PATH}/Schemas
@@ -20,23 +20,51 @@ RUN apt-get update && \
   update-ca-certificates -f && \
 
   # Xvfb and X11 VNC
-  apt-get install -y xvfb x11vnc && \
+  apt-get install -y xvfb x11vnc
 
-  # Malmö
-  wget -q -O /tmp/malmo.zip https://github.com/Microsoft/malmo/releases/download/0.17.0/${MALMO_VERSION}.zip && \
-  unzip -d /tmp/ /tmp/malmo.zip && \
-  mv /tmp/${MALMO_VERSION} ${MALMO_PATH} && \
+RUN apt-get install -y wget \
+  build-essential \
+  git \
+  cmake cmake-qt-gui \
+  libboost-all-dev libpython2.7-dev \
+  lua5.1 liblua5.1-0-dev \
+  openjdk-8-jdk \
+  swig \
+  xsdcxx libxerces-c-dev \
+  doxygen \
+  xsltproc \
+  ffmpeg \
+  python-tk python-imaging-tk && \
 
-  # Build in the image
+  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && \
+
+  # Mono
+  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
+  echo "deb http://download.mono-project.com/repo/debian wheezy main" | tee /etc/apt/sources.list.d/mono-xamarin.list && \
+  echo "deb http://download.mono-project.com/repo/debian wheezy-apache24-compat main" | tee -a /etc/apt/sources.list.d/mono-xamarin.list && \
+  apt-get update && \
+  apt-get install -y mono-devel && \
+
+  git clone https://github.com/rpavlik/luabind.git /tmp/luabind && \
+  cd /tmp/luabind && \
+  mkdir build && cd build && \
+  cmake -DCMAKE_BUILD_TYPE=Release .. && \
+  make install && \
+
+  git clone https://github.com/tnarik/malmo.git ${MALMO_BUILD_PATH} && \
+  cd ${MALMO_BUILD_PATH} && \
+  git checkout -t origin/multiagent_single_account && \
+  wget https://raw.githubusercontent.com/bitfehler/xs3p/1b71310dd1e8b9e4087cf6120856c5f701bd336b/xs3p.xsl -P ${MALMO_BUILD_PATH}/Schemas && \
+  mkdir build && cd build && \
+  cmake -DCMAKE_BUILD_TYPE=Release .. && \
+  make install && \
+
+  cp -r ${MALMO_BUILD_PATH}/build/install ${MALMO_PATH} && \
   cd ${MALMO_PATH}/Minecraft && \
   ./gradlew setupDecompWorkspace && \
-  ./gradlew build && \
-  
-  # clean up
-  apt-get clean && \
-  rm -rf /tmp/* /tmp/.[!.]* /tmp/..?*  /var/lib/apt/lists/*
+  ./gradlew build
 
-COPY files/malmo_client ${MALMO_PATH}/malmo_client
+COPY malmo_client ${MALMO_PATH}/malmo_client
 RUN chmod 777 ${MALMO_PATH}/malmo_client
 
 EXPOSE 5900
