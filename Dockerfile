@@ -20,9 +20,10 @@ RUN apt-get update && \
   update-ca-certificates -f && \
 
   # Xvfb and X11 VNC
-  apt-get install -y xvfb x11vnc
+  apt-get install -y xvfb x11vnc && \
 
-RUN apt-get install -y wget \
+  # Build Malmö from source
+  apt-get install -y wget \
   build-essential \
   git \
   cmake cmake-qt-gui \
@@ -62,9 +63,13 @@ RUN apt-get install -y wget \
   cp -r ${MALMO_BUILD_PATH}/build/install ${MALMO_PATH} && \
   cd ${MALMO_PATH}/Minecraft && \
   ./gradlew setupDecompWorkspace && \
-  ./gradlew build
+  ./gradlew build && \
 
-COPY malmo_client ${MALMO_PATH}/malmo_client
+  # clean up
+  apt-get clean && \
+  rm -rf /tmp/* /tmp/.[!.]* /tmp/..?*  /var/lib/apt/lists/*
+
+COPY files/malmo_client ${MALMO_PATH}/malmo_client
 RUN chmod 777 ${MALMO_PATH}/malmo_client
 
 EXPOSE 5900
