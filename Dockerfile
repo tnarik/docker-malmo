@@ -51,10 +51,19 @@ RUN apt-get update && \
   mkdir build && cd build && \
   cmake -DCMAKE_BUILD_TYPE=Release .. && \
   make install && \
+# TILL THE MARK, ADDED TO SUPPORT work from a local repo (breaks the Dockerfile in 2 RUN sections with a COPY of local code)
+  true
 
-  git clone https://github.com/tnarik/malmo.git ${MALMO_BUILD_PATH} && \
-  cd ${MALMO_BUILD_PATH} && \
-  git checkout -t origin/multiagent_single_account && \
+COPY malmo ${MALMO_BUILD_PATH}
+
+RUN  cd ${MALMO_BUILD_PATH} && \
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && \
+
+# MARK, ADDED TO SUPPORT work from a local repo  (where removed, the below lines should be uncommented) 
+# git clone https://github.com/tnarik/malmo.git ${MALMO_BUILD_PATH} && \
+# cd ${MALMO_BUILD_PATH} && \
+# git checkout -t origin/multiagent_single_account && \
+
   wget https://raw.githubusercontent.com/bitfehler/xs3p/1b71310dd1e8b9e4087cf6120856c5f701bd336b/xs3p.xsl -P ${MALMO_BUILD_PATH}/Schemas && \
   mkdir build && cd build && \
   cmake -DCMAKE_BUILD_TYPE=Release .. && \
